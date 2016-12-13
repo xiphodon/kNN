@@ -51,8 +51,66 @@ def classify0(inX, dataSet, labels, k):
     # 返回统计后距离最小的k个点中出现次数最多的标签
     return sortedClassCount[0][0]
 
+def kNN_demo1():
+    '''
+    k-近邻算法模拟数据与实现分类
+    :return:
+    '''
+    group, labels = createDataSet()
+    print(classify0([1.0, 0.9], group, labels, 3))
 
+
+def file2matrix(filename):
+    '''
+    将文本记录转换为矩阵
+    [文件数据为各个网友的信息，信息每列分别为：
+        1，每年获得的飞行常客里程数
+        2，玩视频游戏所耗时间百分比
+        3，每周消费的冰淇淋的公升数
+        4，魅力值
+    ]
+    :param filename: 数据文件路径
+    :return: 数据矩阵，类型标签集合
+    '''
+    fr = open(filename)
+    arrayOLines = fr.readlines()
+    numberOfLines = len(arrayOLines) # 获取文件行数
+    returnMat = np.zeros((numberOfLines,3)) # 对应数据转化为矩阵
+    classLabelVector = [] # 类型标签集合
+    index = 0
+    for line in arrayOLines:
+        line = line.strip()
+        listFromLine = line.split('\t')
+        returnMat[index,:] = listFromLine[0:3]
+        classLabelVector.append(like_str2int(listFromLine[-1]))
+        index += 1
+    return returnMat,classLabelVector
+
+
+def like_str2int(like):
+    '''
+    魅力值字符串转数字
+    :param like: 魅力值程度字符串
+    :return: 魅力值程度对应的数字
+    '''
+    if like == 'largeDoses':
+        return 3
+    elif like == 'smallDoses':
+        return 2
+    elif like == 'didntLike':
+        return 1
+    else:
+        return 0
+
+
+def kNN_demo2():
+    '''
+    k-近邻算法改进约会网站的配对效果
+    :return:
+    '''
+    datingDataMat, datingLabels = file2matrix('datingTestSet.txt')
+    print(datingDataMat,datingLabels)
 
 if __name__ == '__main__':
-    group, labels = createDataSet()
-    print(classify0([1.0, 0.9],group,labels,3))
+    # kNN_demo1()
+    kNN_demo2()
