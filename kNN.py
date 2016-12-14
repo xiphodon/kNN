@@ -187,6 +187,63 @@ def kNN_demo2():
     classifyPerson()
 
 
+def img2vector(filename):
+    '''
+    将32*32的二进制图像矩阵转换为1*1024的行向量
+    :param filename: 二进制图像矩阵存储文件路径
+    :return: 1*1024的行向量
+    '''
+    returnVect = np.zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j] = int(lineStr[j])
+    return returnVect
+
+
+def handwritingClassTest():
+    '''
+    手写数字识别系统测试
+    :return:
+    '''
+    import os
+    hwLabels = []
+    trainingFileList = os.listdir('digits/trainingDigits') # 获取目录所有文件名
+    m = len(trainingFileList)
+    trainingMat = np.zeros((m,1024))
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0] # 去掉.txt
+        classNumStr = int(fileStr.split('_')[0])
+        hwLabels.append(classNumStr)
+        trainingMat[i,:] = img2vector('digits/trainingDigits/%s' % fileNameStr)
+    testFileList = os.listdir('digits/testDigits') # 获取目录所有文件名
+    errorCount = 0.0
+    mTest = len(testFileList)
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0] # 去掉 .txt
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUnderTest = img2vector('digits/testDigits/%s' % fileNameStr)
+        classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
+        if (classifierResult != classNumStr):
+            print("分类预测结果为: %d, 真实结果为: %d" % (classifierResult, classNumStr))
+            errorCount += 1.0
+    print("\n分类错误数量为: %d" % errorCount)
+    print("\n分类错误率: %3.2f" % (100*errorCount/float(mTest)) + "%")
+
+
+def kNN_demo3():
+    '''
+    k-近邻算法实现手写识别系统
+    :return:
+    '''
+    # imgArray = img2vector('digits/trainingDigits/0_2.txt')
+    # print(imgArray)
+    handwritingClassTest()
+
 if __name__ == '__main__':
     # kNN_demo1()
-    kNN_demo2()
+    # kNN_demo2()
+    kNN_demo3()
